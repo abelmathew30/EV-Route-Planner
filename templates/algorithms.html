@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+{% block title %}Algorithms Explained{% endblock %}
+{% block meta_description %}Learn how BFS, Dijkstra, Greedy Best-First, A*, and Battery-Aware A* work for EV route planning with visual examples.{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <h1><i class="bi bi-cpu-fill me-2" style="color:var(--primary)"></i>Search <span class="gradient-text">Algorithms</span></h1>
+    <p class="lead">A beginner-friendly guide to every algorithm used in this EV planner.</p>
+  </div>
+</div>
+
+<div class="container py-5">
+
+  <!-- BFS -->
+  <div class="algo-card mb-4" id="algo-bfs">
+    <div class="algo-header">
+      <div class="algo-icon" style="background:rgba(255,193,7,0.15);color:#ffc107">🔍</div>
+      <div>
+        <h4 class="mb-0">Breadth-First Search (BFS)</h4>
+        <span class="badge-bfs algo-badge">Unweighted · Layer-by-layer</span>
+      </div>
+    </div>
+    <p>BFS explores the graph level by level, always visiting all nodes at distance 1 before distance 2, etc. It uses a <strong>queue (FIFO)</strong> data structure.</p>
+    <div class="pros-cons">
+      <div class="pros">
+        <strong>✅ Advantages</strong>
+        Guaranteed to find the fewest-hop path. Simple to implement. Complete (will always find a path if one exists).
+      </div>
+      <div class="cons">
+        <strong>❌ Disadvantages</strong>
+        Ignores edge weights — a 500 km highway counts the same as a 10 km city road. Not suitable for EV routing where distances and speeds vary.
+      </div>
+    </div>
+    <div class="algo-formula">Queue: [start] → explore all neighbours → repeat for each level</div>
+    <p class="mt-2" style="font-size:0.85rem;color:var(--text-secondary)">
+      <i class="bi bi-info-circle me-1"></i>
+      <strong>In this project:</strong> BFS is included for educational comparison. Because it ignores edge weights, it often returns a path with fewer stops but much greater total distance than Dijkstra or A*.
+    </p>
+  </div>
+
+  <!-- Dijkstra -->
+  <div class="algo-card mb-4" id="algo-dijkstra">
+    <div class="algo-header">
+      <div class="algo-icon" style="background:rgba(108,99,255,0.15);color:#8c85ff">📐</div>
+      <div>
+        <h4 class="mb-0">Dijkstra's Algorithm</h4>
+        <span class="badge-dijkstra algo-badge">Weighted · Guaranteed Optimal</span>
+      </div>
+    </div>
+    <p>Dijkstra uses a <strong>min-heap priority queue</strong>. It always expands the node with the smallest accumulated cost so far. This guarantees the globally shortest-cost path.</p>
+    <div class="algo-formula">Priority Queue: expand node with minimum g(n) = accumulated cost from start</div>
+    <div class="pros-cons">
+      <div class="pros">
+        <strong>✅ Advantages</strong>
+        Guaranteed shortest-distance path. Works correctly with any positive edge weights. Good for dense graphs.
+      </div>
+      <div class="cons">
+        <strong>❌ Disadvantages</strong>
+        Explores nodes in all directions (no sense of where the goal is). Can be slow on large graphs compared to A*.
+        Time complexity: O((V + E) log V)
+      </div>
+    </div>
+    <p style="font-size:0.85rem;color:var(--text-secondary)">
+      <i class="bi bi-info-circle me-1"></i>
+      <strong>In this project:</strong> Dijkstra finds the true shortest-distance road path. It typically explores more nodes than A* because it has no heuristic guidance toward the goal.
+    </p>
+  </div>
+
+  <!-- Greedy -->
+  <div class="algo-card mb-4" id="algo-greedy">
+    <div class="algo-header">
+      <div class="algo-icon" style="background:rgba(255,107,107,0.15);color:#ff8080">🎯</div>
+      <div>
+        <h4 class="mb-0">Greedy Best-First Search</h4>
+        <span class="badge-greedy algo-badge">Heuristic-Only · Fast, Not Optimal</span>
+      </div>
+    </div>
+    <p>Greedy Best-First always expands the node that <em>looks</em> closest to the goal based on the heuristic h(n), completely ignoring the actual cost accumulated so far.</p>
+    <div class="algo-formula">Priority = h(n) = haversine straight-line distance to goal</div>
+    <div class="pros-cons">
+      <div class="pros">
+        <strong>✅ Advantages</strong>
+        Very fast — explores far fewer nodes than Dijkstra or A*. Good when you need a quick approximate answer.
+      </div>
+      <div class="cons">
+        <strong>❌ Disadvantages</strong>
+        Not guaranteed to find the optimal path. Can get "tricked" by the heuristic into a longer road path. Not complete in graphs with cycles.
+      </div>
+    </div>
+    <p style="font-size:0.85rem;color:var(--text-secondary)">
+      <i class="bi bi-info-circle me-1"></i>
+      <strong>In this project:</strong> Greedy usually finds a path with the fewest nodes explored, but that path is often not the shortest distance.
+    </p>
+  </div>
+
+  <!-- A* -->
+  <div class="algo-card mb-4" id="algo-astar">
+    <div class="algo-header">
+      <div class="algo-icon" style="background:rgba(0,212,170,0.15);color:var(--primary)">⭐</div>
+      <div>
+        <h4 class="mb-0">A* Search</h4>
+        <span class="badge-astar algo-badge">Optimal + Efficient · Recommended</span>
+      </div>
+    </div>
+    <p>A* combines the strengths of Dijkstra (guaranteed optimal) and Greedy (efficient). It uses both the actual cost and a heuristic estimate:</p>
+    <div class="algo-formula" style="font-size:1.1rem">f(n) = g(n) + h(n)</div>
+    <div class="row g-3 my-2">
+      <div class="col-md-6">
+        <div style="background:rgba(0,0,0,0.25);border-radius:var(--radius-sm);padding:1rem;border-left:3px solid var(--primary)">
+          <strong style="color:var(--primary)">g(n)</strong> — Actual accumulated cost from the start node to node n (road distance, time, energy, etc.)
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div style="background:rgba(0,0,0,0.25);border-radius:var(--radius-sm);padding:1rem;border-left:3px solid var(--secondary)">
+          <strong style="color:var(--secondary)">h(n)</strong> — Heuristic estimate of remaining cost from n to the goal (haversine straight-line distance). Never overestimates → <em>admissible</em>.
+        </div>
+      </div>
+    </div>
+    <div class="pros-cons">
+      <div class="pros">
+        <strong>✅ Advantages</strong>
+        Optimal (finds the best path). Complete. Explores far fewer nodes than Dijkstra because the heuristic guides it toward the goal. Best-in-class for route planning.
+      </div>
+      <div class="cons">
+        <strong>❌ Disadvantages</strong>
+        Slightly more complex to implement than Dijkstra. Performance depends on heuristic quality. Memory usage can be high for very large graphs.
+      </div>
+    </div>
+  </div>
+
+  <!-- Battery-Aware A* -->
+  <div class="algo-card" id="algo-ev-astar" style="border-color:rgba(0,212,170,0.3);box-shadow:var(--shadow-glow-sm)">
+    <div class="algo-header">
+      <div class="algo-icon" style="background:rgba(0,212,170,0.15);color:var(--primary)">🔋⭐</div>
+      <div>
+        <h4 class="mb-0">Battery-Aware A* <span class="ms-2" style="font-size:0.7rem;background:rgba(0,212,170,0.15);color:var(--primary);padding:0.2rem 0.6rem;border-radius:50px;vertical-align:middle">Project Core Algorithm</span></h4>
+        <span class="badge-astar algo-badge">EV-Specific · Handles Charging Stops</span>
+      </div>
+    </div>
+    <p>Standard A* only tracks <em>location</em>. For EVs, we must also track <em>battery level</em>. The state space becomes:</p>
+    <div class="algo-formula">State = (node_id, battery_percentage)</div>
+    <p>The algorithm supports two types of actions:</p>
+    <div class="row g-3 mb-3">
+      <div class="col-md-6">
+        <div style="background:rgba(108,99,255,0.1);border:1px solid rgba(108,99,255,0.2);border-radius:var(--radius-sm);padding:1rem">
+          <strong style="color:#8c85ff">🚗 DRIVE Action</strong>
+          <p style="font-size:0.83rem;margin-top:0.5rem;margin-bottom:0;color:var(--text-secondary)">
+            Move along a road edge. Checks if current battery can cover the distance. Deducts energy from battery. Creates a new state with reduced battery.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div style="background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.2);border-radius:var(--radius-sm);padding:1rem">
+          <strong style="color:var(--primary)">⚡ CHARGE Action</strong>
+          <p style="font-size:0.83rem;margin-top:0.5rem;margin-bottom:0;color:var(--text-secondary)">
+            At any node with an available charging station, charge the battery to a higher level. Adds charging time and cost to the path cost.
+          </p>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:0.85rem;color:var(--text-secondary)">
+      The algorithm automatically plans: <span style="color:var(--text-primary)">Drive → Charge → Drive → Charge → … → Destination</span>, choosing charging stops that minimise the total multi-objective cost.
+    </p>
+    <div class="algo-formula">
+      total_cost = α·travel_time + β·charge_time + γ·charge_cost + δ·energy_consumed
+    </div>
+  </div>
+
+  <!-- Quick comparison table -->
+  <div class="mt-5">
+    <h4 class="mb-4 text-center">Quick <span class="gradient-text">Comparison</span></h4>
+    <div style="overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--border)">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Algorithm</th>
+            <th>Optimal?</th>
+            <th>Weighted?</th>
+            <th>Battery-Aware?</th>
+            <th>Speed</th>
+            <th>Use Case</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge-bfs algo-badge">🔍 BFS</span></td>
+            <td style="color:#ffc107">Hop-count only</td>
+            <td style="color:#ff8080">No</td>
+            <td style="color:#ff8080">No</td>
+            <td style="color:#4caf70">Fast</td>
+            <td>Unweighted graphs</td>
+          </tr>
+          <tr>
+            <td><span class="badge-dijkstra algo-badge">📐 Dijkstra</span></td>
+            <td style="color:#4caf70">✅ Yes</td>
+            <td style="color:#4caf70">Yes</td>
+            <td style="color:#ff8080">No</td>
+            <td style="color:#ffc107">Moderate</td>
+            <td>Shortest distance routing</td>
+          </tr>
+          <tr>
+            <td><span class="badge-greedy algo-badge">🎯 Greedy</span></td>
+            <td style="color:#ff8080">No</td>
+            <td style="color:#4caf70">Yes (heuristic)</td>
+            <td style="color:#ff8080">No</td>
+            <td style="color:#4caf70">Very fast</td>
+            <td>Quick approximate paths</td>
+          </tr>
+          <tr>
+            <td><span class="badge-astar algo-badge">⭐ A*</span></td>
+            <td style="color:#4caf70">✅ Yes</td>
+            <td style="color:#4caf70">Yes</td>
+            <td style="color:#ff8080">No</td>
+            <td style="color:#4caf70">Fast</td>
+            <td>Standard route planning</td>
+          </tr>
+          <tr class="optimal-row">
+            <td><span class="badge-astar algo-badge">🔋⭐ Battery A*</span></td>
+            <td style="color:#4caf70">✅ Yes</td>
+            <td style="color:#4caf70">Yes</td>
+            <td style="color:#4caf70">✅ Yes</td>
+            <td style="color:#ffc107">Moderate</td>
+            <td>EV charging route planning ⭐</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="text-center mt-4">
+    <a href="{{ url_for('main.comparison') }}" class="btn-primary-glow">
+      <i class="bi bi-bar-chart-fill me-2"></i> Run Algorithm Comparison Live
+    </a>
+  </div>
+</div>
+{% endblock %}

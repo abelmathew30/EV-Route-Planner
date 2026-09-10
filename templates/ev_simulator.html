@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}EV Simulator{% endblock %}
+{% block meta_description %}Simulate EV battery consumption — enter your vehicle settings and a distance to see if the journey is possible without charging.{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <h1><i class="bi bi-battery-half me-2" style="color:var(--primary)"></i>EV <span class="gradient-text">Simulator</span></h1>
+    <p class="lead">Configure your EV and simulate any journey to check battery feasibility.</p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-4">
+    <!-- Config Panel -->
+    <div class="col-lg-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="mb-4" style="color:var(--primary)"><i class="bi bi-sliders me-2"></i>EV Configuration</h5>
+
+          <div class="mb-3">
+            <label class="form-label">Battery Capacity (kWh)</label>
+            <input type="number" class="form-control sim-input" id="simCapacity" value="60" min="10" max="200" step="5">
+          </div>
+          <div class="mb-3">
+            <label class="form-label d-flex justify-content-between">
+              Current Battery <span id="simBattLabel" style="color:var(--primary)">75%</span>
+            </label>
+            <input type="range" class="sim-input" id="simBattery" value="75" min="0" max="100" step="5">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Efficiency (km/kWh)</label>
+            <input type="number" class="form-control sim-input" id="simEfficiency" value="6.0" min="1" max="15" step="0.5">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Max Charging Power (kW)</label>
+            <input type="number" class="form-control sim-input" id="simMaxPower" value="150" min="3" max="350" step="5">
+          </div>
+          <div class="mb-3">
+            <label class="form-label d-flex justify-content-between">
+              Min Reserve <span id="simReserveLabel" style="color:var(--warning)">10%</span>
+            </label>
+            <input type="range" class="sim-input" id="simReserve" value="10" min="5" max="30" step="5">
+          </div>
+
+          <hr style="border-color:var(--border)">
+
+          <h5 class="mb-3" style="color:var(--primary)"><i class="bi bi-speedometer me-2"></i>Journey Simulation</h5>
+          <div class="mb-3">
+            <label class="form-label">Distance to Simulate (km)</label>
+            <input type="number" class="form-control" id="simDistance" value="150" min="1" max="2000" step="10">
+          </div>
+          <button class="btn-primary-glow w-100 justify-content-center py-2" id="simBtn" onclick="runSimulation()" style="border-radius:var(--radius-md)">
+            <i class="bi bi-play-circle-fill me-2"></i> Run Simulation
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visualisation Panel -->
+    <div class="col-lg-8">
+      <!-- Battery visualisation -->
+      <div class="battery-container mb-4">
+        <h6 style="color:var(--text-secondary);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1.5rem">Battery Status</h6>
+        <div class="battery-body mx-auto">
+          <div class="battery-cell">
+            <div class="battery-fill" id="simBatteryFill" style="width:75%">
+              <div class="battery-text" id="simBatteryText">75%</div>
+            </div>
+          </div>
+          <div class="battery-cap"></div>
+        </div>
+        <div class="row g-3 mt-3 text-center">
+          <div class="col-4">
+            <div style="font-size:1.4rem;font-weight:800;color:var(--primary)" id="dispCurrentEnergy">33.8 kWh</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px">Current Energy</div>
+          </div>
+          <div class="col-4">
+            <div style="font-size:1.4rem;font-weight:800;color:var(--warning)" id="dispUsableEnergy">28.5 kWh</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px">Usable Energy</div>
+          </div>
+          <div class="col-4">
+            <div style="font-size:1.4rem;font-weight:800;color:var(--secondary)" id="dispRange">171 km</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px">Estimated Range</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Simulation Result -->
+      <div id="simResult" style="display:none">
+        <div id="simStatus" class="status-strip mb-4"></div>
+        <div class="row g-3 mb-4">
+          <div class="col-md-4">
+            <div class="card text-center py-3">
+              <div style="font-size:1.6rem;font-weight:800;color:var(--accent)" id="resEnergyReq">—</div>
+              <div style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px">Energy Required (kWh)</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card text-center py-3">
+              <div style="font-size:1.6rem;font-weight:800" id="resRemaining">—</div>
+              <div style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px">Remaining Battery (%)</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card text-center py-3">
+              <div style="font-size:1.6rem;font-weight:800;color:var(--primary)" id="resConsumption">—</div>
+              <div style="font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px">kWh per 100km</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- After-journey battery -->
+        <div class="card">
+          <div class="card-body">
+            <h6 style="color:var(--text-secondary);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1rem">After Journey Battery</h6>
+            <div class="d-flex align-items-center gap-3">
+              <div style="flex:1">
+                <div style="height:20px;background:var(--border);border-radius:10px;overflow:hidden;position:relative">
+                  <div id="afterBatteryBar" style="height:100%;border-radius:10px;transition:width 0.8s ease"></div>
+                  <div id="afterBatteryLabel" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;color:white"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charging estimator -->
+      <div class="card mt-4">
+        <div class="card-body">
+          <h6 style="color:var(--primary);margin-bottom:1rem"><i class="bi bi-lightning-charge-fill me-2"></i>Quick Charging Estimator</h6>
+          <p style="font-size:0.85rem;color:var(--text-secondary)">How long to charge from current battery to a target level?</p>
+          <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+              <label class="form-label">Target Battery (%)</label>
+              <input type="number" class="form-control" id="chargeTarget" value="80" min="0" max="100" step="5">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Station Power (kW)</label>
+              <input type="number" class="form-control" id="stationPower" value="150" min="3" max="350" step="5">
+            </div>
+            <div class="col-md-4">
+              <button class="btn-outline-glow w-100 py-2 justify-content-center" onclick="calcCharge()" style="font-size:0.85rem">
+                Calculate
+              </button>
+            </div>
+          </div>
+          <div id="chargeResult" class="status-strip status-info mt-3" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/simulator.js') }}"></script>
+{% endblock %}

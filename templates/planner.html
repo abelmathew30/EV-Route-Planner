@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% block title %}Route Planner{% endblock %}
+{% block meta_description %}Plan your EV route with AI — select start, destination, battery settings, and search algorithm to get an optimized charging route.{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <h1><i class="bi bi-map-fill me-2" style="color:var(--primary)"></i>Route <span class="gradient-text">Planner</span></h1>
+    <p class="lead">Configure your EV and let the AI find the optimal charging route.</p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-4">
+    <!-- ===== FORM PANEL ===== -->
+    <div class="col-lg-5">
+      <form id="routeForm">
+        <!-- Route -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5 class="mb-4" style="color:var(--primary)"><i class="bi bi-geo-alt-fill me-2"></i>Route</h5>
+
+            <div class="mb-3">
+              <label class="form-label">Start Location</label>
+              <select class="form-select" id="startNode" name="start" required>
+                <option value="">— Select city —</option>
+                {% for node in nodes %}
+                <option value="{{ node.id }}">{{ node.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Destination</label>
+              <select class="form-select" id="goalNode" name="goal" required>
+                <option value="">— Select city —</option>
+                {% for node in nodes %}
+                <option value="{{ node.id }}">{{ node.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- EV Settings -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5 class="mb-4" style="color:var(--primary)"><i class="bi bi-battery-half me-2"></i>EV Settings</h5>
+
+            <div class="mb-3">
+              <label class="form-label">Battery Capacity (kWh)</label>
+              <input type="number" class="form-control" id="batteryCapacity" name="battery_capacity"
+                     value="60" min="10" max="200" step="5" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label d-flex justify-content-between">
+                Current Battery <span id="batteryPctDisplay" style="color:var(--primary)">75%</span>
+              </label>
+              <input type="range" id="batteryPct" name="battery_pct" value="75" min="0" max="100" step="5">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">EV Efficiency (km/kWh)</label>
+              <input type="number" class="form-control" id="efficiency" name="efficiency"
+                     value="6.0" min="1" max="15" step="0.5" required>
+              <small style="color:var(--text-muted);font-size:0.75rem">Typical range: 4–8 km/kWh</small>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Max Charging Power (kW)</label>
+              <input type="number" class="form-control" id="maxChargePower" name="max_charge_power"
+                     value="150" min="3" max="350" step="5" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label d-flex justify-content-between">
+                Min Battery Reserve <span id="reserveDisplay" style="color:var(--warning)">10%</span>
+              </label>
+              <input type="range" id="minReserve" name="min_reserve" value="10" min="5" max="30" step="5">
+            </div>
+          </div>
+        </div>
+
+        <!-- Algorithm & Mode -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5 class="mb-4" style="color:var(--primary)"><i class="bi bi-cpu-fill me-2"></i>Search Settings</h5>
+
+            <div class="mb-3">
+              <label class="form-label">Search Algorithm</label>
+              <select class="form-select" id="algorithm" name="algorithm">
+                <option value="astar" selected>⭐ A* (Recommended)</option>
+                <option value="dijkstra">📐 Dijkstra</option>
+                <option value="greedy">🎯 Greedy Best-First</option>
+                <option value="bfs">🔍 BFS</option>
+              </select>
+              <small id="algoHint" style="color:var(--text-muted);font-size:0.75rem">A* is optimal and efficient — best for EV routing.</small>
+            </div>
+
+            <div class="mb-1">
+              <label class="form-label">Optimization Mode</label>
+              <div class="row g-2" id="modeSelector">
+                {% set modes = [("balanced","⚖️","Balanced"),("fastest","⚡","Fastest"),("cheapest","💰","Cheapest"),("eco","🌿","Eco")] %}
+                {% for val, icon, label in modes %}
+                <div class="col-6">
+                  <input type="radio" class="btn-check" name="mode" id="mode_{{ val }}" value="{{ val }}"
+                         {% if val == 'balanced' %}checked{% endif %}>
+                  <label class="btn w-100 py-2" for="mode_{{ val }}"
+                         style="background:var(--bg-input);border:1px solid var(--border);color:var(--text-secondary);border-radius:var(--radius-sm);font-size:0.82rem;font-weight:600;transition:var(--transition)">
+                    {{ icon }} {{ label }}
+                  </label>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <div id="formError" class="status-strip status-error d-none">
+          <i class="bi bi-exclamation-circle-fill"></i> <span id="formErrorMsg"></span>
+        </div>
+
+        <button type="submit" class="btn-primary-glow w-100 justify-content-center py-3" id="findRouteBtn" style="border-radius:var(--radius-md)">
+          <i class="bi bi-search me-2"></i> Find Optimal Route
+        </button>
+      </form>
+    </div>
+
+    <!-- ===== INFO PANEL ===== -->
+    <div class="col-lg-7">
+      <!-- Live EV Summary -->
+      <div class="card mb-4" id="evSummaryCard">
+        <div class="card-body">
+          <h6 style="color:var(--text-secondary);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1.2rem">Live EV Summary</h6>
+          <div class="row g-3 text-center">
+            <div class="col-4">
+              <div style="font-size:1.5rem;font-weight:800;color:var(--primary)" id="summaryRange">—</div>
+              <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px">Est. Range (km)</div>
+            </div>
+            <div class="col-4">
+              <div style="font-size:1.5rem;font-weight:800;color:var(--warning)" id="summaryEnergy">—</div>
+              <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px">Usable Energy (kWh)</div>
+            </div>
+            <div class="col-4">
+              <div style="font-size:1.5rem;font-weight:800;color:var(--secondary)" id="summaryBattery">—</div>
+              <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px">Battery %</div>
+            </div>
+          </div>
+          <!-- Battery bar -->
+          <div class="mt-3">
+            <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden">
+              <div id="batteryBar" style="height:100%;border-radius:4px;background:var(--gradient-primary);width:75%;transition:width 0.4s ease"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Algorithm info cards -->
+      <div class="row g-3" id="algoInfoCards">
+        {% set algo_info = {
+          "astar": ("⭐", "A* Search", "var(--primary)", "Optimal + Efficient", "Uses f(n)=g(n)+h(n) with haversine heuristic. Explores fewest nodes while guaranteeing the best path."),
+          "dijkstra": ("📐", "Dijkstra", "#8c85ff", "Guaranteed Optimal", "Explores all nodes by accumulated cost. Always finds the shortest path but may be slower than A*."),
+          "greedy": ("🎯", "Greedy Best-First", "#ff8080", "Fast, Not Optimal", "Only looks at h(n) — the straight-line distance to goal. Very fast but may miss better paths."),
+          "bfs": ("🔍", "BFS", "#ffc107", "Unweighted Only", "Explores layer by layer. Optimal for hop-count but ignores edge weights and battery constraints.")
+        } %}
+        {% for key, (icon, name, color, tag, desc) in algo_info.items() %}
+        <div class="col-12 algo-info-card" id="info_{{ key }}" {% if key != 'astar' %}style="display:none"{% endif %}>
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex align-items-center gap-3">
+                <div class="feature-icon" style="background:rgba(0,0,0,0.2);">{{ icon }}</div>
+                <div>
+                  <div class="fw-bold" style="color:{{ color }}">{{ name }}</div>
+                  <div style="font-size:0.72rem;padding:0.15rem 0.5rem;border-radius:50px;display:inline-block;background:rgba(255,255,255,0.06);color:var(--text-secondary)">{{ tag }}</div>
+                </div>
+              </div>
+              <p style="font-size:0.85rem;color:var(--text-secondary);margin-top:0.75rem;margin-bottom:0">{{ desc }}</p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Quick links -->
+      <div class="mt-4 d-flex gap-3 flex-wrap">
+        <a href="{{ url_for('main.comparison') }}" class="btn-outline-glow py-2 px-3" style="font-size:0.85rem">
+          <i class="bi bi-bar-chart-fill me-1"></i> Compare All Algorithms
+        </a>
+        <a href="{{ url_for('main.stations') }}" class="btn-outline-glow py-2 px-3" style="font-size:0.85rem">
+          <i class="bi bi-lightning-charge-fill me-1"></i> View Charging Stations
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/planner.js') }}"></script>
+{% endblock %}

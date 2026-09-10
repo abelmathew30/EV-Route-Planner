@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Algorithm Comparison{% endblock %}
+{% block meta_description %}Compare BFS, Dijkstra, Greedy, and A* side-by-side on the same route — nodes explored, execution time, distance, and optimality.{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <h1><i class="bi bi-bar-chart-fill me-2" style="color:var(--primary)"></i>Algorithm <span class="gradient-text">Comparison</span></h1>
+    <p class="lead">Run all 4 algorithms on the same route and compare their real performance.</p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <!-- Input Form -->
+  <div class="card mb-5">
+    <div class="card-body">
+      <h5 class="mb-4" style="color:var(--primary)"><i class="bi bi-geo-alt-fill me-2"></i>Select Route to Compare</h5>
+      <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label">Start City</label>
+          <select class="form-select" id="cmpStart">
+            <option value="">— Select city —</option>
+            {% for node in nodes %}
+            <option value="{{ node.id }}" {% if node.id == 'KCH' %}selected{% endif %}>{{ node.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Destination City</label>
+          <select class="form-select" id="cmpGoal">
+            <option value="">— Select city —</option>
+            {% for node in nodes %}
+            <option value="{{ node.id }}" {% if node.id == 'TVM' %}selected{% endif %}>{{ node.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-4">
+          <button class="btn-primary-glow w-100 justify-content-center py-2" id="runCmpBtn" onclick="runComparison()"
+                  style="border-radius:var(--radius-md)">
+            <i class="bi bi-play-fill me-2"></i> Run Comparison
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div id="cmpLoading" style="display:none" class="text-center py-5">
+    <div class="spinner-glow mx-auto mb-3"></div>
+    <p style="color:var(--text-secondary)">Running all 4 algorithms…</p>
+  </div>
+
+  <!-- Results -->
+  <div id="cmpResults" style="display:none">
+    <!-- Result cards -->
+    <div class="row g-3 mb-4" id="algoCards"></div>
+
+    <!-- Comparison Table -->
+    <div class="mb-4" style="overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--border)">
+      <table class="comparison-table" id="cmpTable">
+        <thead>
+          <tr>
+            <th>Algorithm</th>
+            <th>Nodes Explored</th>
+            <th>Execution Time</th>
+            <th>Route Distance</th>
+            <th>Travel Time</th>
+            <th>Optimal?</th>
+          </tr>
+        </thead>
+        <tbody id="cmpTableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Charts -->
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="chart-card">
+          <div class="chart-title">Nodes Explored</div>
+          <canvas id="chartNodes" height="220"></canvas>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="chart-card">
+          <div class="chart-title">Execution Time (ms)</div>
+          <canvas id="chartTime" height="220"></canvas>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="chart-card">
+          <div class="chart-title">Route Distance (km)</div>
+          <canvas id="chartDist" height="220"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paths -->
+    <div class="row g-3 mt-2" id="pathCards"></div>
+
+    <!-- Recommendation -->
+    <div class="status-strip status-info mt-4" id="recommendation">
+      <i class="bi bi-lightbulb-fill fs-4"></i>
+      <div id="recommendationText"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/comparison.js') }}"></script>
+{% endblock %}

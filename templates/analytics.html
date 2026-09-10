@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block title %}Analytics{% endblock %}
+{% block meta_description %}Analytics dashboard showing optimization mode comparisons, algorithm performance, and route statistics for EV route planning.{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <h1><i class="bi bi-graph-up-arrow me-2" style="color:var(--primary)"></i>Route <span class="gradient-text">Analytics</span></h1>
+    <p class="lead">Visual comparison of optimization modes and algorithm performance metrics.</p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <!-- Mode cards -->
+  <h5 class="mb-3" style="color:var(--primary)"><i class="bi bi-sliders me-2"></i>Optimization Mode Trade-offs</h5>
+  <div class="row g-3 mb-5">
+    {% set modes_desc = [
+      ("⚡","Fastest","fastest","Minimises total journey time. Pays more for fast DC chargers and may use more energy. Best when time matters most.","var(--primary)","alpha=0.7, beta=0.3, gamma=0, delta=0"),
+      ("💰","Cheapest","cheapest","Minimises electricity cost. Prefers slower AC chargers with lower price-per-kWh. Journey takes longer but costs less.","#ffc107","alpha=0.1, beta=0.1, gamma=0.8, delta=0"),
+      ("🌿","Eco","eco","Minimises energy consumption. Takes the most energy-efficient route, avoiding high-speed highways when possible.","#4caf70","alpha=0.1, beta=0, gamma=0, delta=0.9"),
+      ("⚖️","Balanced","balanced","Balances all four objectives. Good all-round choice for most journeys.","#8c85ff","alpha=0.4, beta=0.2, gamma=0.2, delta=0.2")
+    ] %}
+    {% for icon, name, mode, desc, color, weights in modes_desc %}
+    <div class="col-md-6 col-xl-3">
+      <div class="card h-100" style="border-color:rgba(255,255,255,0.08)">
+        <div class="card-body">
+          <div style="font-size:2rem;margin-bottom:0.5rem">{{ icon }}</div>
+          <h6 class="fw-bold" style="color:{{ color }}">{{ name }}</h6>
+          <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:0.75rem">{{ desc }}</p>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text-muted);background:rgba(0,0,0,0.3);padding:0.5rem;border-radius:6px">{{ weights }}</div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Interactive demo: run all modes on a route -->
+  <div class="card mb-5">
+    <div class="card-body">
+      <h5 style="color:var(--primary)" class="mb-4"><i class="bi bi-play-circle-fill me-2"></i>Live Mode Comparison</h5>
+      <p style="font-size:0.9rem;color:var(--text-secondary)">Run Battery-Aware A* with all 4 optimization modes on the same route and compare the results.</p>
+      <div class="row g-3 align-items-end">
+        <div class="col-md-3">
+          <label class="form-label">Start</label>
+          <select class="form-select" id="analStart">
+            <option value="KCH">Kochi</option>
+            <option value="TVM">Thiruvananthapuram</option>
+            <option value="KZK">Kozhikode</option>
+            <option value="KTM">Kottayam</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Destination</label>
+          <select class="form-select" id="analGoal">
+            <option value="TVM">Thiruvananthapuram</option>
+            <option value="KCH">Kochi</option>
+            <option value="KNR">Kannur</option>
+            <option value="KZK">Kozhikode</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Battery %</label>
+          <input type="number" class="form-control" id="analBattery" value="80" min="20" max="100" step="5">
+        </div>
+        <div class="col-md-3">
+          <button class="btn-primary-glow w-100 justify-content-center py-2" id="analRunBtn" onclick="runAnalytics()" style="border-radius:var(--radius-md)">
+            <i class="bi bi-bar-chart-fill me-2"></i> Compare Modes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div id="analLoading" style="display:none" class="text-center py-4">
+    <div class="spinner-glow mx-auto mb-3"></div>
+    <p style="color:var(--text-secondary)">Running all optimization modes…</p>
+  </div>
+
+  <!-- Charts area -->
+  <div id="analCharts" style="display:none">
+    <div class="row g-4 mb-4">
+      <div class="col-md-6">
+        <div class="chart-card">
+          <div class="chart-title">Journey Time (minutes)</div>
+          <canvas id="chartJourneyTime" height="250"></canvas>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="chart-card">
+          <div class="chart-title">Charging Cost (₹)</div>
+          <canvas id="chartCost" height="250"></canvas>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="chart-card">
+          <div class="chart-title">Energy Consumed (kWh)</div>
+          <canvas id="chartEnergy" height="250"></canvas>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="chart-card">
+          <div class="chart-title">Charging Stops</div>
+          <canvas id="chartStops" height="250"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Table -->
+    <div style="overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--border)">
+      <table class="comparison-table" id="analTable">
+        <thead>
+          <tr>
+            <th>Mode</th>
+            <th>Total Time</th>
+            <th>Drive Time</th>
+            <th>Charge Time</th>
+            <th>Energy (kWh)</th>
+            <th>Cost (₹)</th>
+            <th>Stops</th>
+            <th>Distance</th>
+          </tr>
+        </thead>
+        <tbody id="analTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Static explanation charts -->
+  <div class="mt-5">
+    <h5 class="mb-4" style="color:var(--primary)"><i class="bi bi-info-circle me-2"></i>Understanding the Trade-offs</h5>
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="chart-card">
+          <div class="chart-title">Weight Distribution by Mode</div>
+          <canvas id="chartWeights" height="260"></canvas>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="algo-card">
+          <h6 style="color:var(--primary);margin-bottom:1rem">How Optimization Affects Routing</h6>
+          <div class="mb-3">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span style="font-size:1.2rem">⚡</span>
+              <strong style="font-size:0.85rem">Fastest</strong>
+              <span class="ms-auto" style="font-size:0.75rem;color:var(--text-muted)">Travel Time ↓ · Cost ↑</span>
+            </div>
+            <div style="height:4px;background:var(--border);border-radius:2px">
+              <div style="width:70%;height:100%;background:var(--primary);border-radius:2px"></div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span style="font-size:1.2rem">💰</span>
+              <strong style="font-size:0.85rem">Cheapest</strong>
+              <span class="ms-auto" style="font-size:0.75rem;color:var(--text-muted)">Cost ↓ · Time ↑</span>
+            </div>
+            <div style="height:4px;background:var(--border);border-radius:2px">
+              <div style="width:80%;height:100%;background:#ffc107;border-radius:2px"></div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span style="font-size:1.2rem">🌿</span>
+              <strong style="font-size:0.85rem">Eco</strong>
+              <span class="ms-auto" style="font-size:0.75rem;color:var(--text-muted)">Energy ↓ · May detour</span>
+            </div>
+            <div style="height:4px;background:var(--border);border-radius:2px">
+              <div style="width:90%;height:100%;background:#4caf70;border-radius:2px"></div>
+            </div>
+          </div>
+          <div class="mb-0">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span style="font-size:1.2rem">⚖️</span>
+              <strong style="font-size:0.85rem">Balanced</strong>
+              <span class="ms-auto" style="font-size:0.75rem;color:var(--text-muted)">Best overall choice</span>
+            </div>
+            <div style="height:4px;background:var(--border);border-radius:2px">
+              <div style="width:60%;height:100%;background:#8c85ff;border-radius:2px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+{% endblock %}

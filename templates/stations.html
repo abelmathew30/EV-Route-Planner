@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}Charging Stations{% endblock %}
+{% block meta_description %}Browse all EV charging stations in the Kerala road network — filter by type, price, and availability.{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <h1><i class="bi bi-lightning-charge-fill me-2" style="color:var(--primary)"></i>Charging <span class="gradient-text">Stations</span></h1>
+    <p class="lead">All {{ stations|length }} charging stations on the network — search, filter, and view on the map.</p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <!-- Filters -->
+  <div class="card mb-4">
+    <div class="card-body py-3">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label">Search</label>
+          <div class="input-group">
+            <span class="input-group-text" style="background:var(--bg-input);border:1px solid var(--border);border-right:0;color:var(--text-secondary)">
+              <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control" id="stationSearch"
+                   placeholder="Search by name or location…" style="border-left:0">
+          </div>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Charger Type</label>
+          <select class="form-select" id="filterType">
+            <option value="">All Types</option>
+            <option value="DC Fast">DC Fast</option>
+            <option value="AC">AC</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Availability</label>
+          <select class="form-select" id="filterAvail">
+            <option value="">All</option>
+            <option value="available">Available</option>
+            <option value="unavailable">Unavailable</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Max Price (₹/kWh)</label>
+          <input type="number" class="form-control" id="filterPrice" placeholder="e.g. 20" min="0" max="100">
+        </div>
+        <div class="col-md-2">
+          <button class="btn-outline-glow w-100 py-2 justify-content-center" onclick="clearFilters()" id="clearFilterBtn">
+            <i class="bi bi-x-circle me-1"></i> Clear
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Station Cards -->
+    <div class="col-lg-7">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <span id="stationCount" style="color:var(--text-secondary);font-size:0.85rem">
+          Showing <strong style="color:var(--text-primary)">{{ stations|length }}</strong> stations
+        </span>
+        <div class="d-flex gap-2">
+          <span class="d-flex align-items-center gap-1" style="font-size:0.8rem;color:var(--text-secondary)">
+            <span class="availability-dot dot-available"></span> Available
+          </span>
+          <span class="d-flex align-items-center gap-1" style="font-size:0.8rem;color:var(--text-secondary)">
+            <span class="availability-dot dot-unavailable"></span> Unavailable
+          </span>
+        </div>
+      </div>
+
+      <div class="row g-3" id="stationsGrid">
+        {% for s in stations %}
+        <div class="col-md-6 station-item"
+             data-name="{{ s.name|lower }}"
+             data-city="{{ s.node_id|lower }}"
+             data-type="{{ s.charger_type }}"
+             data-avail="{{ 'available' if s.available else 'unavailable' }}"
+             data-price="{{ s.price_per_kwh }}">
+          <div class="station-card {% if not s.available %}unavailable{% endif %}">
+            <div class="station-header">
+              <span class="station-type-badge {{ 'type-dc' if 'DC' in s.charger_type else 'type-ac' }}">
+                {{ s.charger_type }}
+              </span>
+              <span style="font-size:0.8rem">
+                <span class="availability-dot {{ 'dot-available' if s.available else 'dot-unavailable' }}"></span>
+                {{ 'Available' if s.available else 'Unavailable' }}
+              </span>
+            </div>
+
+            <h6 class="fw-bold mb-1" style="font-size:0.95rem">{{ s.name }}</h6>
+            <p style="font-size:0.78rem;color:var(--text-secondary);margin-bottom:0.75rem">
+              <i class="bi bi-geo-alt-fill me-1" style="color:var(--primary)"></i>Node: {{ s.node_id }}
+            </p>
+
+            <div class="station-meta">
+              <div class="meta-item">
+                <span class="meta-label">Power</span>
+                <span class="meta-value">{{ s.charging_power }} kW</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Price</span>
+                <span class="meta-value">₹{{ s.price_per_kwh }}/kWh</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Chargers</span>
+                <span class="meta-value">{{ s.num_chargers }} port{{ 's' if s.num_chargers > 1 }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">ID</span>
+                <span class="meta-value font-mono">{{ s.id }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div id="noStationsMsg" class="text-center py-4" style="display:none;color:var(--text-muted)">
+        <i class="bi bi-lightning-slash" style="font-size:2rem"></i>
+        <p class="mt-2">No stations match your filters.</p>
+      </div>
+    </div>
+
+    <!-- Map -->
+    <div class="col-lg-5">
+      <div class="map-container" style="position:sticky;top:80px">
+        <div id="stations-map" style="height:560px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Station data for JS -->
+<script id="stationsData" type="application/json">
+{{ stations_json | safe }}
+</script>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/stations.js') }}"></script>
+{% endblock %}

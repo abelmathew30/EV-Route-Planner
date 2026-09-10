@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Route Results{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="container">
+    <h1><i class="bi bi-signpost-split-fill me-2" style="color:var(--primary)"></i>Route <span class="gradient-text">Results</span></h1>
+    <p class="lead">Your optimized EV route with charging stops and full journey breakdown.</p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <!-- Loading State -->
+  <div id="resultsLoading" class="text-center py-5" style="display:none">
+    <div class="spinner-glow mx-auto mb-3"></div>
+    <p style="color:var(--text-secondary)">Calculating optimal route…</p>
+  </div>
+
+  <!-- Error State -->
+  <div id="resultsError" class="status-strip status-error" style="display:none">
+    <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+    <div>
+      <strong>Route Not Found</strong>
+      <div id="errorMsg" style="font-size:0.85rem;opacity:0.8"></div>
+    </div>
+  </div>
+
+  <!-- No Data State -->
+  <div id="noDataState" class="text-center py-5">
+    <div style="font-size:4rem;margin-bottom:1rem">🗺️</div>
+    <h4 style="color:var(--text-secondary)">No route calculated yet</h4>
+    <p style="color:var(--text-muted)">Go to the Route Planner and click "Find Optimal Route".</p>
+    <a href="{{ url_for('main.planner') }}" class="btn-primary-glow mt-3">
+      <i class="bi bi-map-fill me-2"></i> Open Route Planner
+    </a>
+  </div>
+
+  <!-- Results Content -->
+  <div id="resultsContent" style="display:none">
+    <!-- Summary Cards Row -->
+    <div class="row g-3 mb-4" id="summaryCards">
+      {% set summary_items = [
+        ("distance","bi-rulers","Total Distance","km"),
+        ("travelTime","bi-clock-fill","Driving Time","min"),
+        ("chargeTime","bi-lightning-charge-fill","Charging Time","min"),
+        ("totalTime","bi-hourglass-split","Total Journey","min"),
+        ("energy","bi-battery-charging","Energy Used","kWh"),
+        ("chargeCost","bi-currency-rupee","Charging Cost","₹"),
+        ("stops","bi-geo-fill","Charging Stops",""),
+        ("finalBattery","bi-battery-full","Final Battery","%")
+      ] %}
+      {% for id, icon, label, unit in summary_items %}
+      <div class="col-6 col-md-3">
+        <div class="card text-center py-3 px-2">
+          <i class="bi {{ icon }} mb-2" style="font-size:1.5rem;color:var(--primary)"></i>
+          <div style="font-size:1.4rem;font-weight:800;color:var(--text-primary)" id="res_{{ id }}">—</div>
+          <div style="font-size:0.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px">{{ label }}{% if unit %} ({{ unit }}){% endif %}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="row g-4">
+      <!-- LEFT: Map + Route path -->
+      <div class="col-lg-7">
+        <!-- Map -->
+        <div class="map-container mb-4">
+          <div id="results-map"></div>
+        </div>
+
+        <!-- Route path visual -->
+        <div class="card">
+          <div class="card-body">
+            <h6 style="color:var(--primary);text-transform:uppercase;letter-spacing:0.5px;font-size:0.75rem;margin-bottom:1rem">
+              <i class="bi bi-signpost-fill me-2"></i>Route Path
+            </h6>
+            <div id="routePathDisplay" class="d-flex flex-wrap align-items-center gap-1"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Timeline -->
+      <div class="col-lg-5">
+        <div class="card" style="height:fit-content">
+          <div class="card-body">
+            <h6 style="color:var(--primary);text-transform:uppercase;letter-spacing:0.5px;font-size:0.75rem;margin-bottom:1.5rem">
+              <i class="bi bi-list-ol me-2"></i>Journey Timeline
+            </h6>
+            <div class="timeline" id="journeyTimeline"></div>
+          </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="d-flex gap-2 mt-3">
+          <a href="{{ url_for('main.planner') }}" class="btn-outline-glow flex-fill justify-content-center py-2" style="font-size:0.85rem">
+            <i class="bi bi-arrow-left me-1"></i> New Route
+          </a>
+          <a href="{{ url_for('main.comparison') }}" class="btn-outline-glow flex-fill justify-content-center py-2" style="font-size:0.85rem">
+            <i class="bi bi-bar-chart-fill me-1"></i> Compare Algorithms
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/results.js') }}"></script>
+{% endblock %}
