@@ -88,19 +88,6 @@ algorithm to get an optimized charging route.{% endblock %}
         <div class="card mb-4">
           <div class="card-body">
             <h5 class="mb-4" style="color:var(--primary)"><i class="bi bi-cpu-fill me-2"></i>Search Settings</h5>
-
-            <div class="mb-3">
-              <label class="form-label">Search Algorithm</label>
-              <select class="form-select" id="algorithm" name="algorithm">
-                <option value="astar" selected>⭐ A* (Recommended)</option>
-                <option value="dijkstra">📐 Dijkstra</option>
-                <option value="greedy">🎯 Greedy Best-First</option>
-                <option value="bfs">🔍 BFS</option>
-              </select>
-              <small id="algoHint" style="color:var(--text-muted);font-size:0.75rem">A* is optimal and efficient — best
-                for EV routing.</small>
-            </div>
-
             <div class="mb-1">
               <label class="form-label">Optimization Mode</label>
               <div class="row g-2" id="modeSelector">

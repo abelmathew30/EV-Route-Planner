@@ -116,9 +116,12 @@ document.querySelectorAll('input[name="mode"]').forEach(radio => {
 });
 
 // ---- Algorithm select → show info ----
-document.getElementById('algorithm').addEventListener('change', function () {
-  showAlgoInfo(this.value);
-});
+const algoSelect = document.getElementById('algorithm');
+if (algoSelect) {
+  algoSelect.addEventListener('change', function () {
+    showAlgoInfo(this.value);
+  });
+}
 
 // ---- Slider inputs ----
 ['batteryPct', 'minReserve', 'batteryCapacity', 'efficiency'].forEach(id => {

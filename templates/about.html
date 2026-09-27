@@ -13,11 +13,11 @@ methodology, and future roadmap.{% endblock %}
 </div>
 
 <div class="container py-3">
-  <div class="row g-3">
-    <div class="col-lg-8">
 
-      <!-- Problem Statement -->
-      <div class="algo-card mb-3">
+  <!-- Problem Statement — full width -->
+  <div class="row g-3 mb-3">
+    <div class="col-12">
+      <div class="algo-card">
         <h4 class="mb-2" style="color:var(--primary)">🔍 Problem Statement</h4>
         <p>Standard GPS navigation solves: <em>"Find the shortest path from A to B."</em></p>
         <p>EV navigation must solve: <em>"Find the optimal path from A to B, given that the vehicle has a limited
@@ -43,8 +43,41 @@ methodology, and future roadmap.{% endblock %}
           </div>
         </div>
       </div>
-
     </div>
+  </div>
+
+  <!-- System Architecture + Sidebar -->
+  <div class="row g-3">
+    <div class="col-lg-8">
+      <!-- System Architecture -->
+      <div class="algo-card mb-3">
+        <h4 class="mb-2" style="color:var(--primary)">🏗️ System Architecture</h4>
+        <div class="text-center py-3">
+          {% set arch = [
+          ("👤","User","Selects route, EV specs, algorithm"),
+          ("🖥️","Web Frontend","HTML/CSS/JS + Leaflet + Chart.js"),
+          ("🔌","Flask API","REST endpoints process requests"),
+          ("⚙️","Route Engine","Orchestrates graph + EV model + algorithm"),
+          ("🗺️","Road Graph","Weighted adjacency list (40 nodes, 90 edges)"),
+          ("🔋","EV Model","Battery capacity, efficiency, range"),
+          ("⭐","A* Search","Battery-aware optimal path finding"),
+          ("📊","Multi-objective Cost","Fastest/Cheapest/Eco/Balanced"),
+          ("🏁","Route Result","Path + timeline + charging stops + stats")
+          ] %}
+          {% for icon, name, desc in arch %}
+          <div class="d-flex flex-column align-items-center">
+            <div
+              style="background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.2);border-radius:var(--radius-sm);padding:0.4rem 1.2rem;font-size:0.82rem;font-weight:600">
+              {{ icon }} {{ name }}
+              <span style="font-size:0.72rem;color:var(--text-muted);font-weight:400;margin-left:0.5rem">{{ desc }}</span>
+            </div>
+            {% if not loop.last %}<div style="color:var(--primary);font-size:0.9rem;margin:0.15rem 0">↓</div>{% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
     <!-- Sidebar -->
     <div class="col-lg-4">
       <!-- Project Info -->
@@ -114,42 +147,6 @@ methodology, and future roadmap.{% endblock %}
       </div>
     </div>
 
-  </div>
-
-  <div class="row g-3 mt-1">
-    <div class="col-lg-5">
-      <!-- System Architecture -->
-      <div class="algo-card mb-3">
-        <h4 class="mb-2" style="color:var(--primary)">🏗️ System Architecture</h4>
-        <div class="text-center py-3">
-          {% set arch = [
-          ("👤","User","Selects route, EV specs, algorithm"),
-          ("🖥️","Web Frontend","HTML/CSS/JS + Leaflet + Chart.js"),
-          ("🔌","Flask API","REST endpoints process requests"),
-          ("⚙️","Route Engine","Orchestrates graph + EV model + algorithm"),
-          ("🗺️","Road Graph","Weighted adjacency list (40 nodes, 90 edges)"),
-          ("🔋","EV Model","Battery capacity, efficiency, range"),
-          ("⭐","A* Search","Battery-aware optimal path finding"),
-          ("📊","Multi-objective Cost","Fastest/Cheapest/Eco/Balanced"),
-          ("🏁","Route Result","Path + timeline + charging stops + stats")
-          ] %}
-          {% for icon, name, desc in arch %}
-          <div class="d-flex flex-column align-items-center">
-            <div
-              style="background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.2);border-radius:var(--radius-sm);padding:0.4rem 1.2rem;font-size:0.82rem;font-weight:600">
-              {{ icon }} {{ name }}
-              <span style="font-size:0.72rem;color:var(--text-muted);font-weight:400;margin-left:0.5rem">{{ desc
-                }}</span>
-            </div>
-            {% if not loop.last %}<div style="color:var(--primary);font-size:0.9rem;margin:0.15rem 0">↓</div>{% endif %}
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-
-    </div>
-    <div class="col-lg-7">
-    </div>
   </div>
 
 </div>

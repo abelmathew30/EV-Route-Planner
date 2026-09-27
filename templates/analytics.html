@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Analytics{% endblock %}
-{% block meta_description %}Analytics dashboard showing optimization mode comparisons, algorithm performance, and route statistics for EV route planning.{% endblock %}
+{% block meta_description %}Analytics dashboard showing optimization mode comparisons, algorithm performance, and route
+statistics for EV route planning.{% endblock %}
 
 {% block content %}
 <div class="page-header">
   <div class="container">
-    <h1><i class="bi bi-graph-up-arrow me-2" style="color:var(--primary)"></i>Route <span class="gradient-text">Analytics</span></h1>
+    <h1><i class="bi bi-graph-up-arrow me-2" style="color:var(--primary)"></i>Route <span
+        class="gradient-text">Analytics</span></h1>
     <p class="lead">Visual comparison of optimization modes and algorithm performance metrics.</p>
   </div>
 </div>
@@ -15,10 +17,10 @@
   <h5 class="mb-3" style="color:var(--primary)"><i class="bi bi-sliders me-2"></i>Optimization Mode Trade-offs</h5>
   <div class="row g-3 mb-5">
     {% set modes_desc = [
-      ("⚡","Fastest","fastest","Minimises total journey time. Pays more for fast DC chargers and may use more energy. Best when time matters most.","var(--primary)","alpha=0.7, beta=0.3, gamma=0, delta=0"),
-      ("💰","Cheapest","cheapest","Minimises electricity cost. Prefers slower AC chargers with lower price-per-kWh. Journey takes longer but costs less.","#ffc107","alpha=0.1, beta=0.1, gamma=0.8, delta=0"),
-      ("🌿","Eco","eco","Minimises energy consumption. Takes the most energy-efficient route, avoiding high-speed highways when possible.","#4caf70","alpha=0.1, beta=0, gamma=0, delta=0.9"),
-      ("⚖️","Balanced","balanced","Balances all four objectives. Good all-round choice for most journeys.","#8c85ff","alpha=0.4, beta=0.2, gamma=0.2, delta=0.2")
+    ("⚡","Fastest","fastest","Minimises total journey time. Pays more for fast DC chargers and may use more energy. Best when time matters most.","var(--primary)","alpha=0.7, beta=0.3, gamma=0, delta=0"),
+    ("💰","Cheapest","cheapest","Minimises electricity cost. Prefers slower AC chargers with lower price-per-kWh. Journey takes longer but costs less.","#ffc107","alpha=0.1, beta=0.1, gamma=0.8, delta=0"),
+    ("🌿","Eco","eco","Minimises energy consumption. Takes the most energy-efficient route, avoiding high-speed highways when possible.","#4caf70","alpha=0.1, beta=0, gamma=0, delta=0.9"),
+    ("⚖️","Balanced","balanced","Balances all four objectives. Good all-round choice for most journeys.","#8c85ff","alpha=0.4, beta=0.2, gamma=0.2, delta=0.2")
     ] %}
     {% for icon, name, mode, desc, color, weights in modes_desc %}
     <div class="col-md-6 col-xl-3">
@@ -27,7 +29,9 @@
           <div style="font-size:2rem;margin-bottom:0.5rem">{{ icon }}</div>
           <h6 class="fw-bold" style="color:{{ color }}">{{ name }}</h6>
           <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:0.75rem">{{ desc }}</p>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text-muted);background:rgba(0,0,0,0.3);padding:0.5rem;border-radius:6px">{{ weights }}</div>
+          <div
+            style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text-muted);background:rgba(0,0,0,0.3);padding:0.5rem;border-radius:6px">
+            {{ weights }}</div>
         </div>
       </div>
     </div>
@@ -38,7 +42,8 @@
   <div class="card mb-5">
     <div class="card-body">
       <h5 style="color:var(--primary)" class="mb-4"><i class="bi bi-play-circle-fill me-2"></i>Live Mode Comparison</h5>
-      <p style="font-size:0.9rem;color:var(--text-secondary)">Run Battery-Aware A* with all 4 optimization modes on the same route and compare the results.</p>
+      <p style="font-size:0.9rem;color:var(--text-secondary)">Run Battery-Aware A* with all 4 optimization modes on the
+        same route and compare the results.</p>
       <div class="row g-3 align-items-end">
         <div class="col-md-3">
           <label class="form-label">Start</label>
@@ -63,7 +68,8 @@
           <input type="number" class="form-control" id="analBattery" value="80" min="20" max="100" step="5">
         </div>
         <div class="col-md-3">
-          <button class="btn-primary-glow w-100 justify-content-center py-2" id="analRunBtn" onclick="runAnalytics()" style="border-radius:var(--radius-md)">
+          <button class="btn-primary-glow w-100 justify-content-center py-2" id="analRunBtn" onclick="runAnalytics()"
+            style="border-radius:var(--radius-md)">
             <i class="bi bi-bar-chart-fill me-2"></i> Compare Modes
           </button>
         </div>
@@ -128,7 +134,8 @@
 
   <!-- Static explanation charts -->
   <div class="mt-5">
-    <h5 class="mb-4" style="color:var(--primary)"><i class="bi bi-info-circle me-2"></i>Understanding the Trade-offs</h5>
+    <h5 class="mb-4" style="color:var(--primary)"><i class="bi bi-info-circle me-2"></i>Understanding the Trade-offs
+    </h5>
     <div class="row g-4">
       <div class="col-md-6">
         <div class="chart-card">
