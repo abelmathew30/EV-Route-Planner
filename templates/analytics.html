@@ -17,21 +17,18 @@ statistics for EV route planning.{% endblock %}
   <h5 class="mb-3" style="color:var(--primary)"><i class="bi bi-sliders me-2"></i>Optimization Mode Trade-offs</h5>
   <div class="row g-3 mb-5">
     {% set modes_desc = [
-    ("⚡","Fastest","fastest","Minimises total journey time. Pays more for fast DC chargers and may use more energy. Best when time matters most.","var(--primary)","alpha=0.7, beta=0.3, gamma=0, delta=0"),
-    ("💰","Cheapest","cheapest","Minimises electricity cost. Prefers slower AC chargers with lower price-per-kWh. Journey takes longer but costs less.","#ffc107","alpha=0.1, beta=0.1, gamma=0.8, delta=0"),
-    ("🌿","Eco","eco","Minimises energy consumption. Takes the most energy-efficient route, avoiding high-speed highways when possible.","#4caf70","alpha=0.1, beta=0, gamma=0, delta=0.9"),
-    ("⚖️","Balanced","balanced","Balances all four objectives. Good all-round choice for most journeys.","#8c85ff","alpha=0.4, beta=0.2, gamma=0.2, delta=0.2")
+    ("⚡","Fastest","fastest","Minimises total journey time. Pays more for fast DC chargers and may use more energy. Best when time matters most.","var(--primary)"),
+    ("💰","Cheapest","cheapest","Minimises electricity cost. Prefers slower AC chargers with lower price-per-kWh. Journey takes longer but costs less.","#ffc107"),
+    ("🌿","Eco","eco","Minimises energy consumption. Takes the most energy-efficient route, avoiding high-speed highways when possible.","#4caf70"),
+    ("⚖️","Balanced","balanced","Balances all four objectives. Good all-round choice for most journeys.","#8c85ff")
     ] %}
-    {% for icon, name, mode, desc, color, weights in modes_desc %}
+    {% for icon, name, mode, desc, color in modes_desc %}
     <div class="col-md-6 col-xl-3">
       <div class="card h-100" style="border-color:rgba(255,255,255,0.08)">
         <div class="card-body">
           <div style="font-size:2rem;margin-bottom:0.5rem">{{ icon }}</div>
           <h6 class="fw-bold" style="color:{{ color }}">{{ name }}</h6>
-          <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:0.75rem">{{ desc }}</p>
-          <div
-            style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text-muted);background:rgba(0,0,0,0.3);padding:0.5rem;border-radius:6px">
-            {{ weights }}</div>
+          <p style="font-size:0.82rem;color:var(--text-secondary);margin-bottom:0">{{ desc }}</p>
         </div>
       </div>
     </div>
@@ -132,64 +129,6 @@ statistics for EV route planning.{% endblock %}
     </div>
   </div>
 
-  <!-- Static explanation charts -->
-  <div class="mt-5">
-    <h5 class="mb-4" style="color:var(--primary)"><i class="bi bi-info-circle me-2"></i>Understanding the Trade-offs
-    </h5>
-    <div class="row g-4">
-      <div class="col-md-6">
-        <div class="chart-card">
-          <div class="chart-title">Weight Distribution by Mode</div>
-          <canvas id="chartWeights" height="260"></canvas>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="algo-card">
-          <h6 style="color:var(--primary);margin-bottom:1rem">How Optimization Affects Routing</h6>
-          <div class="mb-3">
-            <div class="d-flex align-items-center gap-2 mb-1">
-              <span style="font-size:1.2rem">⚡</span>
-              <strong style="font-size:0.85rem">Fastest</strong>
-              <span class="ms-auto" style="font-size:0.75rem;color:var(--text-muted)">Travel Time ↓ · Cost ↑</span>
-            </div>
-            <div style="height:4px;background:var(--border);border-radius:2px">
-              <div style="width:70%;height:100%;background:var(--primary);border-radius:2px"></div>
-            </div>
-          </div>
-          <div class="mb-3">
-            <div class="d-flex align-items-center gap-2 mb-1">
-              <span style="font-size:1.2rem">💰</span>
-              <strong style="font-size:0.85rem">Cheapest</strong>
-              <span class="ms-auto" style="font-size:0.75rem;color:var(--text-muted)">Cost ↓ · Time ↑</span>
-            </div>
-            <div style="height:4px;background:var(--border);border-radius:2px">
-              <div style="width:80%;height:100%;background:#ffc107;border-radius:2px"></div>
-            </div>
-          </div>
-          <div class="mb-3">
-            <div class="d-flex align-items-center gap-2 mb-1">
-              <span style="font-size:1.2rem">🌿</span>
-              <strong style="font-size:0.85rem">Eco</strong>
-              <span class="ms-auto" style="font-size:0.75rem;color:var(--text-muted)">Energy ↓ · May detour</span>
-            </div>
-            <div style="height:4px;background:var(--border);border-radius:2px">
-              <div style="width:90%;height:100%;background:#4caf70;border-radius:2px"></div>
-            </div>
-          </div>
-          <div class="mb-0">
-            <div class="d-flex align-items-center gap-2 mb-1">
-              <span style="font-size:1.2rem">⚖️</span>
-              <strong style="font-size:0.85rem">Balanced</strong>
-              <span class="ms-auto" style="font-size:0.75rem;color:var(--text-muted)">Best overall choice</span>
-            </div>
-            <div style="height:4px;background:var(--border);border-radius:2px">
-              <div style="width:60%;height:100%;background:#8c85ff;border-radius:2px"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
 {% endblock %}
 
