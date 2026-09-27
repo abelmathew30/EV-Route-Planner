@@ -149,46 +149,6 @@ methodology, and future roadmap.{% endblock %}
 
     </div>
     <div class="col-lg-7">
-      <!-- Methodology -->
-      <div class="algo-card mb-3">
-        <h4 class="mb-2" style="color:var(--primary)">📐 Methodology</h4>
-
-        <h6 style="color:var(--text-secondary);margin-bottom:0.5rem">Graph Representation</h6>
-        <p style="font-size:0.85rem">The road network is a weighted directed graph G = (V, E) where V is the set of
-          cities/junctions and E is the set of roads. Each edge e ∈ E has: distance (km), speed (km/h), traffic factor.
-        </p>
-        <div class="algo-formula font-mono" style="font-size:0.78rem">
-          effective_speed = base_speed / traffic_factor<br>
-          travel_time = distance / effective_speed<br>
-          energy = distance / efficiency_km_per_kWh
-        </div>
-
-        <h6 style="color:var(--text-secondary);margin-top:1rem;margin-bottom:0.25rem">Battery-Aware A* State Space</h6>
-        <p style="font-size:0.85rem">The state is (node, battery%) discretized in 5% steps to keep the state space
-          finite. Two transition types:</p>
-        <div class="row g-2">
-          <div class="col-md-6">
-            <div class="algo-formula" style="font-size:0.78rem">
-              DRIVE: (n, b%) → (n', b' = b - energy/capacity × 100%)<br>
-              <span style="color:var(--text-muted)">if energy_needed ≤ usable_energy</span>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="algo-formula" style="font-size:0.78rem">
-              CHARGE: (n, b%) → (n, b_target%)<br>
-              <span style="color:var(--text-muted)">if charging station available at n</span>
-            </div>
-          </div>
-        </div>
-
-        <h6 style="color:var(--text-secondary);margin-top:1rem;margin-bottom:0.25rem">Multi-Objective Cost Function</h6>
-        <div class="algo-formula" style="font-size:0.85rem">
-          cost = α·(t_travel/T_max) + β·(t_charge/C_max) + γ·(cost_INR/P_max) + δ·(energy/E_max)
-        </div>
-        <p style="font-size:0.82rem;color:var(--text-secondary);margin-top:0.5rem">All metrics are normalised to [0,1]
-          before weighting to prevent unit-scale dominance.</p>
-      </div>
-
     </div>
   </div>
 
