@@ -1,11 +1,13 @@
 {% extends "base.html" %}
 {% block title %}About — How It Works{% endblock %}
-{% block meta_description %}Learn about the EV Charging Route Planner system architecture, problem statement, AI methodology, and future roadmap.{% endblock %}
+{% block meta_description %}Learn about the EV Charging Route Planner system architecture, problem statement, AI
+methodology, and future roadmap.{% endblock %}
 
 {% block content %}
 <div class="page-header">
   <div class="container">
-    <h1><i class="bi bi-info-circle-fill me-2" style="color:var(--primary)"></i>About & <span class="gradient-text">How It Works</span></h1>
+    <h1><i class="bi bi-info-circle-fill me-2" style="color:var(--primary)"></i>About & <span class="gradient-text">How
+        It Works</span></h1>
     <p class="lead">A project demonstrating AI-powered EV route optimization with real search algorithms.</p>
   </div>
 </div>
@@ -18,43 +20,51 @@
       <div class="algo-card mb-3">
         <h4 class="mb-2" style="color:var(--primary)">🔍 Problem Statement</h4>
         <p>Standard GPS navigation solves: <em>"Find the shortest path from A to B."</em></p>
-        <p>EV navigation must solve: <em>"Find the optimal path from A to B, given that the vehicle has a limited battery and must stop to recharge."</em></p>
+        <p>EV navigation must solve: <em>"Find the optimal path from A to B, given that the vehicle has a limited
+            battery and must stop to recharge."</em></p>
         <div class="row g-3 mt-2">
           <div class="col-md-6">
-            <div style="background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.2);border-radius:var(--radius-md);padding:0.75rem">
+            <div
+              style="background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.2);border-radius:var(--radius-md);padding:0.75rem">
               <strong style="color:#ff8080">Normal Navigation</strong>
               <div class="algo-formula mt-2" style="font-size:0.85rem">State = location</div>
-              <p style="font-size:0.82rem;color:var(--text-secondary);margin:0.5rem 0 0">Find shortest path from A to B.</p>
+              <p style="font-size:0.82rem;color:var(--text-secondary);margin:0.5rem 0 0">Find shortest path from A to B.
+              </p>
             </div>
           </div>
           <div class="col-md-6">
-            <div style="background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.2);border-radius:var(--radius-md);padding:0.75rem">
+            <div
+              style="background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.2);border-radius:var(--radius-md);padding:0.75rem">
               <strong style="color:var(--primary)">EV Navigation</strong>
               <div class="algo-formula mt-2" style="font-size:0.85rem">State = (location, battery)</div>
-              <p style="font-size:0.82rem;color:var(--text-secondary);margin:0.5rem 0 0">Find optimal path respecting battery constraints and charging opportunities.</p>
+              <p style="font-size:0.82rem;color:var(--text-secondary);margin:0.5rem 0 0">Find optimal path respecting
+                battery constraints and charging opportunities.</p>
             </div>
           </div>
         </div>
       </div>
 
-      </div>
-<!-- Sidebar -->
+    </div>
+    <!-- Sidebar -->
     <div class="col-lg-4">
       <!-- Project Info -->
       <div class="card mb-3">
         <div class="card-body">
-          <h6 style="color:var(--primary);text-transform:uppercase;letter-spacing:0.5px;font-size:0.75rem;margin-bottom:1rem">Project Info</h6>
+          <h6
+            style="color:var(--primary);text-transform:uppercase;letter-spacing:0.5px;font-size:0.75rem;margin-bottom:1rem">
+            Project Info</h6>
           {% set info = [
-            ("🤖","Domain","AI / Heuristic Search"),
-            ("🗺️","Region","Kerala Road Network"),
-            ("⚙️","Backend","Python 3 / Flask"),
-            ("🖥️","Frontend","HTML / CSS / Vanilla JS"),
-            ("🗄️","Database","SQLite / SQLAlchemy"),
-            ("🗺️","Maps","Leaflet.js + OpenStreetMap"),
-            ("📊","Charts","Chart.js")
+          ("🤖","Domain","AI / Heuristic Search"),
+          ("🗺️","Region","Kerala Road Network"),
+          ("⚙️","Backend","Python 3 / Flask"),
+          ("🖥️","Frontend","HTML / CSS / Vanilla JS"),
+          ("🗄️","Database","SQLite / SQLAlchemy"),
+          ("🗺️","Maps","Leaflet.js + OpenStreetMap"),
+          ("📊","Charts","Chart.js")
           ] %}
           {% for icon, label, value in info %}
-          <div class="d-flex justify-content-between align-items-center py-2" style="border-bottom:1px solid rgba(255,255,255,0.05)">
+          <div class="d-flex justify-content-between align-items-center py-2"
+            style="border-bottom:1px solid rgba(255,255,255,0.05)">
             <span style="font-size:0.82rem;color:var(--text-secondary)">{{ icon }} {{ label }}</span>
             <span style="font-size:0.82rem;font-weight:600">{{ value }}</span>
           </div>
@@ -65,15 +75,18 @@
       <!-- Dataset -->
       <div class="card mb-3">
         <div class="card-body">
-          <h6 style="color:var(--primary);text-transform:uppercase;letter-spacing:0.5px;font-size:0.75rem;margin-bottom:1rem">Dataset</h6>
-          <p style="font-size:0.82rem;color:var(--text-secondary)">Fixed seed dataset (not random) for reproducible results:</p>
+          <h6
+            style="color:var(--primary);text-transform:uppercase;letter-spacing:0.5px;font-size:0.75rem;margin-bottom:1rem">
+            Dataset</h6>
+          <p style="font-size:0.82rem;color:var(--text-secondary)">Fixed seed dataset (not random) for reproducible
+            results:</p>
           {% set dataset = [
-            ("🏙️","Road Nodes","40 cities / junctions"),
-            ("🛣️","Road Edges","90+ directed connections"),
-            ("⚡","Charging Stations","15 stations (DC Fast + AC)"),
-            ("📍","Region","Kochi ↔ Trivandrum corridor + Kozhikode + Wayanad"),
-            ("🔢","Traffic Factors","1.0 (free) to 1.5 (heavy)"),
-            ("💰","Price Range","₹11 – ₹20 per kWh")
+          ("🏙️","Road Nodes","40 cities / junctions"),
+          ("🛣️","Road Edges","90+ directed connections"),
+          ("⚡","Charging Stations","15 stations (DC Fast + AC)"),
+          ("📍","Region","Kochi ↔ Trivandrum corridor + Kozhikode + Wayanad"),
+          ("🔢","Traffic Factors","1.0 (free) to 1.5 (heavy)"),
+          ("💰","Price Range","₹11 – ₹20 per kWh")
           ] %}
           {% for icon, label, value in dataset %}
           <div class="py-1">
@@ -86,13 +99,16 @@
 
       <!-- Quick links -->
       <div class="d-flex flex-column gap-2">
-        <a href="{{ url_for('main.planner') }}" class="btn-primary-glow justify-content-center py-2" style="font-size:0.85rem">
+        <a href="{{ url_for('main.planner') }}" class="btn-primary-glow justify-content-center py-2"
+          style="font-size:0.85rem">
           <i class="bi bi-map-fill me-2"></i> Try Route Planner
         </a>
-        <a href="{{ url_for('main.comparison') }}" class="btn-outline-glow justify-content-center py-2" style="font-size:0.85rem">
+        <a href="{{ url_for('main.comparison') }}" class="btn-outline-glow justify-content-center py-2"
+          style="font-size:0.85rem">
           <i class="bi bi-bar-chart-fill me-2"></i> Compare Algorithms
         </a>
-        <a href="{{ url_for('main.algorithms') }}" class="btn-outline-glow justify-content-center py-2" style="font-size:0.85rem">
+        <a href="{{ url_for('main.algorithms') }}" class="btn-outline-glow justify-content-center py-2"
+          style="font-size:0.85rem">
           <i class="bi bi-cpu-fill me-2"></i> Learn Algorithms
         </a>
       </div>
@@ -107,21 +123,23 @@
         <h4 class="mb-2" style="color:var(--primary)">🏗️ System Architecture</h4>
         <div class="text-center py-3">
           {% set arch = [
-            ("👤","User","Selects route, EV specs, algorithm"),
-            ("🖥️","Web Frontend","HTML/CSS/JS + Leaflet + Chart.js"),
-            ("🔌","Flask API","REST endpoints process requests"),
-            ("⚙️","Route Engine","Orchestrates graph + EV model + algorithm"),
-            ("🗺️","Road Graph","Weighted adjacency list (40 nodes, 90 edges)"),
-            ("🔋","EV Model","Battery capacity, efficiency, range"),
-            ("⭐","A* Search","Battery-aware optimal path finding"),
-            ("📊","Multi-objective Cost","Fastest/Cheapest/Eco/Balanced"),
-            ("🏁","Route Result","Path + timeline + charging stops + stats")
+          ("👤","User","Selects route, EV specs, algorithm"),
+          ("🖥️","Web Frontend","HTML/CSS/JS + Leaflet + Chart.js"),
+          ("🔌","Flask API","REST endpoints process requests"),
+          ("⚙️","Route Engine","Orchestrates graph + EV model + algorithm"),
+          ("🗺️","Road Graph","Weighted adjacency list (40 nodes, 90 edges)"),
+          ("🔋","EV Model","Battery capacity, efficiency, range"),
+          ("⭐","A* Search","Battery-aware optimal path finding"),
+          ("📊","Multi-objective Cost","Fastest/Cheapest/Eco/Balanced"),
+          ("🏁","Route Result","Path + timeline + charging stops + stats")
           ] %}
           {% for icon, name, desc in arch %}
           <div class="d-flex flex-column align-items-center">
-            <div style="background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.2);border-radius:var(--radius-sm);padding:0.4rem 1.2rem;font-size:0.82rem;font-weight:600">
+            <div
+              style="background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.2);border-radius:var(--radius-sm);padding:0.4rem 1.2rem;font-size:0.82rem;font-weight:600">
               {{ icon }} {{ name }}
-              <span style="font-size:0.72rem;color:var(--text-muted);font-weight:400;margin-left:0.5rem">{{ desc }}</span>
+              <span style="font-size:0.72rem;color:var(--text-muted);font-weight:400;margin-left:0.5rem">{{ desc
+                }}</span>
             </div>
             {% if not loop.last %}<div style="color:var(--primary);font-size:0.9rem;margin:0.15rem 0">↓</div>{% endif %}
           </div>
@@ -129,14 +147,16 @@
         </div>
       </div>
 
-      </div>
+    </div>
     <div class="col-lg-7">
       <!-- Methodology -->
       <div class="algo-card mb-3">
         <h4 class="mb-2" style="color:var(--primary)">📐 Methodology</h4>
 
         <h6 style="color:var(--text-secondary);margin-bottom:0.5rem">Graph Representation</h6>
-        <p style="font-size:0.85rem">The road network is a weighted directed graph G = (V, E) where V is the set of cities/junctions and E is the set of roads. Each edge e ∈ E has: distance (km), speed (km/h), traffic factor.</p>
+        <p style="font-size:0.85rem">The road network is a weighted directed graph G = (V, E) where V is the set of
+          cities/junctions and E is the set of roads. Each edge e ∈ E has: distance (km), speed (km/h), traffic factor.
+        </p>
         <div class="algo-formula font-mono" style="font-size:0.78rem">
           effective_speed = base_speed / traffic_factor<br>
           travel_time = distance / effective_speed<br>
@@ -144,7 +164,8 @@
         </div>
 
         <h6 style="color:var(--text-secondary);margin-top:1rem;margin-bottom:0.25rem">Battery-Aware A* State Space</h6>
-        <p style="font-size:0.85rem">The state is (node, battery%) discretized in 5% steps to keep the state space finite. Two transition types:</p>
+        <p style="font-size:0.85rem">The state is (node, battery%) discretized in 5% steps to keep the state space
+          finite. Two transition types:</p>
         <div class="row g-2">
           <div class="col-md-6">
             <div class="algo-formula" style="font-size:0.78rem">
@@ -164,44 +185,12 @@
         <div class="algo-formula" style="font-size:0.85rem">
           cost = α·(t_travel/T_max) + β·(t_charge/C_max) + γ·(cost_INR/P_max) + δ·(energy/E_max)
         </div>
-        <p style="font-size:0.82rem;color:var(--text-secondary);margin-top:0.5rem">All metrics are normalised to [0,1] before weighting to prevent unit-scale dominance.</p>
+        <p style="font-size:0.82rem;color:var(--text-secondary);margin-top:0.5rem">All metrics are normalised to [0,1]
+          before weighting to prevent unit-scale dominance.</p>
       </div>
 
-      </div>
+    </div>
   </div>
 
-  <div class="row g-3 mt-1">
-    <div class="col-12">
-      <!-- Future Improvements -->
-      <div class="algo-card">
-        <h4 class="mb-2" style="color:var(--primary)">🚀 Future Improvements</h4>
-        <div class="row g-2">
-          {% set future = [
-            "Real-time traffic data (Google Maps / HERE API)",
-            "Real charging station API (OCPP / PlugShare)",
-            "Live electricity prices per state",
-            "Weather-based efficiency adjustment",
-            "Battery degradation model (capacity loss over charge cycles)",
-            "Dynamic charging availability (live occupancy)",
-            "Multi-EV routing (fleet management)",
-            "Machine learning for travel-time prediction",
-            "OpenStreetMap full integration",
-            "Mobile-responsive native app (React Native)",
-            "User accounts with route history",
-            "Cost comparison across different EV models"
-          ] %}
-          {% for item in future %}
-          <div class="col-md-4 col-lg-3">
-            <div style="background:rgba(0,0,0,0.2);border-radius:var(--radius-sm);padding:0.5rem 0.75rem;font-size:0.83rem;display:flex;align-items:center;gap:0.5rem">
-              <i class="bi bi-arrow-right-circle-fill" style="color:var(--primary);flex-shrink:0"></i>
-              {{ item }}
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-    </div>
-
-      </div>
 </div>
 {% endblock %}
