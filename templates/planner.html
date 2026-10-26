@@ -161,13 +161,7 @@ algorithm to get an optimized charging route.{% endblock %}
       <div class="row g-3" id="algoInfoCards">
         {% set algo_info = {
         "astar": ("⭐", "A* Search", "var(--primary)", "Optimal + Efficient", "Uses f(n)=g(n)+h(n) with haversine
-        heuristic. Explores fewest nodes while guaranteeing the best path."),
-        "dijkstra": ("📐", "Dijkstra", "#8c85ff", "Guaranteed Optimal", "Explores all nodes by accumulated cost. Always
-        finds the shortest path but may be slower than A*."),
-        "greedy": ("🎯", "Greedy Best-First", "#ff8080", "Fast, Not Optimal", "Only looks at h(n) — the straight-line
-        distance to goal. Very fast but may miss better paths."),
-        "bfs": ("🔍", "BFS", "#ffc107", "Unweighted Only", "Explores layer by layer. Optimal for hop-count but ignores
-        edge weights and battery constraints.")
+        heuristic. Explores fewest nodes while guaranteeing the best path.")
         } %}
         {% for key, info in algo_info.items() %}
         {% set icon = info[0] %}

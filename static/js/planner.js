@@ -43,9 +43,6 @@ function showAlgoInfo(key) {
   // Update hint text
   const hints = {
     astar: 'A* is optimal and efficient — best for EV routing.',
-    dijkstra: 'Dijkstra guarantees the shortest distance but explores more nodes than A*.',
-    greedy: 'Greedy is very fast but may not return the shortest path.',
-    bfs: 'BFS ignores edge weights. Included for educational comparison only.'
   };
   document.getElementById('algoHint').textContent = hints[key] || '';
 }

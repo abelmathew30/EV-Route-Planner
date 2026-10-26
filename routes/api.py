@@ -17,9 +17,6 @@ from models.database import db, RoadNode, RoadEdge, ChargingStation
 from models.graph import RoadGraph
 from models.ev import EV
 from models.charging_station import ChargingStationModel
-from algorithms.bfs import bfs
-from algorithms.dijkstra import dijkstra
-from algorithms.greedy import greedy
 from algorithms.astar import astar
 from algorithms.ev_astar import ev_astar
 
@@ -190,8 +187,7 @@ def compute_route():
 @api_bp.route("/compare", methods=["POST"])
 def compare_algorithms():
     """
-    Run BFS, Dijkstra, Greedy, and A* on the same route and return
-    all results for side-by-side comparison.
+    Run A* on the given route and return results.
 
     Request JSON:
       start : node ID
@@ -209,9 +205,6 @@ def compare_algorithms():
     graph = _build_graph()
 
     results = {
-        "BFS": bfs(graph, start, goal),
-        "Dijkstra": dijkstra(graph, start, goal),
-        "Greedy": greedy(graph, start, goal),
         "A*": astar(graph, start, goal),
     }
 
