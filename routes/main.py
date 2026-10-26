@@ -1,6 +1,6 @@
 """
 routes/main.py — Page Routes
-Serves all 8 multi-page HTML templates.
+Serves all HTML page templates.
 """
 
 from flask import Blueprint, render_template
@@ -46,17 +46,7 @@ def ev_simulator():
     return render_template("ev_simulator.html")
 
 
-@main_bp.route("/algorithms")
-def algorithms():
-    """Algorithm explanations page."""
-    return render_template("algorithms.html")
 
-
-@main_bp.route("/comparison")
-def comparison():
-    """Algorithm comparison page."""
-    nodes = RoadNode.query.order_by(RoadNode.name).all()
-    return render_template("comparison.html", nodes=nodes)
 
 
 @main_bp.route("/analytics")
